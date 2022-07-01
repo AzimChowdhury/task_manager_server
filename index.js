@@ -38,19 +38,53 @@ function run() {
         })
 
         //add task to completed
-        app.post('/completed',async (req, res) => {
+        app.post('/completed', async (req, res) => {
             const task = req.body;
-            const result =await completedCollection.insertOne(task)
+            const result = await completedCollection.insertOne(task)
             res.send(result)
         })
 
         //delete completed task
-        app.delete('/deleteTask/:id',async(req,res)=>{
-            const id= req.params.id;
-            const query = {_id:ObjectId(id)}
+        app.delete('/deleteTask/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: ObjectId(id) }
             const result = await taskCollection.deleteOne(query)
             res.send(result)
         })
+
+
+        //get completed task by email
+        app.get('/completed/:email', async (req, res) => {
+            const email = req.params.email;
+            const query = { email: email }
+            const result = await completedCollection.find(query).toArray();
+            res.send(result);
+        })
+
+        //get a  task by id 
+        app.get('/task/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: ObjectId(id) }
+            const result = await taskCollection.findOne(query)
+            res.send(result)
+        })
+
+        app.put('/editTask/:id', async (req, res) => {
+            const id = req.params.id;
+            const name = req.body.name;
+            const description = req.body.description;
+            const query = {_id:ObjectId(id)}
+            const updatedDoc={
+                $set:{
+                    name:name,
+                    description:description
+                }
+            };
+            const result = await taskCollection.updateOne(query,updatedDoc);
+            res.send(result)
+        })
+
+
 
     }
 
